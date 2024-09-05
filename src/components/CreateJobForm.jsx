@@ -41,7 +41,7 @@ const CreateJobForm = () => {
       const token = localStorage.getItem('token');
       console.log('Token:', token);
 
-      const response = await fetch('http://localhost:8000/jobs/create-job', {
+      const response = await fetch('https://talentfinderapi-b7aqezaechc4gddd.centralus-01.azurewebsites.net/jobs/create-job', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

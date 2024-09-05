@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const instance = axios.create({
-  baseURL: 'http://localhost:8000', // Ajusta la URL base según sea necesario
+  baseURL: 'https://talentfinderapi-b7aqezaechc4gddd.centralus-01.azurewebsites.net', // Ajusta la URL base según sea necesario
 });
 
 // Añadir un interceptor para enviar el token en cada solicitud

@@ -23,7 +23,7 @@ export default function InicioPage() {
 
     const fetchJobs = async () => {
       try {
-        const response = await axios.get('http://localhost:8000/jobs/jobs'); // Usa tu endpoint de la API
+        const response = await axios.get('https://talentfinderapi-b7aqezaechc4gddd.centralus-01.azurewebsites.net/jobs/jobs'); // Usa tu endpoint de la API
         setJobs(response.data);
         setFilteredJobs(response.data);
         setLoading(false);
