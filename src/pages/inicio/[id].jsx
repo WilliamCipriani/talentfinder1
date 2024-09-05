@@ -69,7 +69,7 @@ export default function DetalleTrabajo({ job }) {
       <Header
         title="Detalles del trabajo"
         subtitle="Conoce más sobre nuestras oportunidades de empleo."
-        backgroundClass="bg-hero-detalles"
+        backgroundclassName="bg-hero-detalles"
       />
       <Layout>
         <div className="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg mt-10">
@@ -95,8 +95,8 @@ export default function DetalleTrabajo({ job }) {
           <div className="mt-6">
             <h2 className="font-bold">Postular al Trabajo</h2>
             {hasApplied ? (
-              <div class="p-4 mb-4 text-sm text-green-800 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-400" role="alert">
-                <span class="font-medium">¡Alerta de éxito!</span> Postulación exitosa
+              <div className="p-4 mb-4 text-sm text-green-800 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-400" role="alert">
+                <span className="font-medium">¡Alerta de éxito!</span> Postulación exitosa
               </div>
             ) : (
               <div className="flex justify-center items-center w-full">

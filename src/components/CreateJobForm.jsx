@@ -1,5 +1,6 @@
 // components/CreateJobForm.jsx
 import React, { useState } from 'react';
+import axios from '../lib/axios';
 
 const CreateJobForm = () => {
   const [job, setJob] = useState({
@@ -38,21 +39,10 @@ const CreateJobForm = () => {
     console.log('Submitting new job:', newJob);
 
     try {
-      const token = localStorage.getItem('token');
-      console.log('Token:', token);
 
-      const response = await fetch('https://talentfinderapi-b7aqezaechc4gddd.centralus-01.azurewebsites.net/jobs/create-job', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}` // Asegúrate de tener el token guardado en localStorage
-        },
-        body: JSON.stringify(newJob)
-      });
+      const response = await axios.post('/jobs/create-job', newJob);
 
-      console.log('Response status:', response.status);
-
-      if (response.ok) {
+      if (response.status === 200) {
         alert('Trabajo creado exitosamente');
         setJob({
           company: '',

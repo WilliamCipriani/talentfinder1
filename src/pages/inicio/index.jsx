@@ -4,7 +4,7 @@ import SearchJob from "@/components/SearchJob";
 import JobCard from "@/components/JobCard";
 import Header from "@/components/Header";
 import { useUser } from '@/context/userContext';
-import axios from 'axios';
+import axios from '../../lib/axios';
 
 export default function InicioPage() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -23,7 +23,7 @@ export default function InicioPage() {
 
     const fetchJobs = async () => {
       try {
-        const response = await axios.get('https://talentfinderapi-b7aqezaechc4gddd.centralus-01.azurewebsites.net/jobs/jobs'); // Usa tu endpoint de la API
+        const response = await axios.get('/jobs/jobs'); // Usa tu instancia de Axios
         setJobs(response.data);
         setFilteredJobs(response.data);
         setLoading(false);
@@ -68,7 +68,7 @@ export default function InicioPage() {
       <Header
         title="Trabajos Disponibles"
         subtitle="Conoce más sobre nuestras oportunidades de empleo."
-        backgroundClass="bg-hero-inicio"
+        backgroundclassName="bg-hero-inicio"
         userName={user ? user.full_name : 'Usuario'}
       />
       <Layout>

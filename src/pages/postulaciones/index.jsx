@@ -35,7 +35,7 @@ export default function MyPostulaciones() {
       <Header
         title="Postulaciones de Trabajo"
         subtitle="Conoce más sobre nuestras oportunidades de empleo."
-        backgroundClass="bg-hero-postulaciones"
+        backgroundclassName="bg-hero-postulaciones"
       />
       <Layout>
         <div className="max-w-4xl mx-auto mt-10 space-y-4">
@@ -44,7 +44,7 @@ export default function MyPostulaciones() {
               key={application.id}
               title={application.title}
               description={application.company}
-              status={application.status} // Mostrar el estado en lugar del progreso
+              status={application.status} 
             />
           ))} 
         </div>
