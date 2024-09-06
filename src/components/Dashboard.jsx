@@ -36,7 +36,7 @@ const Dashboard = () => {
   }, []);
 
   const openPassedModal = () => {
-    const filteredDetails = (details || []).filter(d => d.status === 'passed');
+    const filteredDetails = details; // Asume que todos los datos en details son aprobados
     console.log('Filtered Passed Details:', filteredDetails);
     setSelectedDetail(filteredDetails);
     setIsPassedModalOpen(true);

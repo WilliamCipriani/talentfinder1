@@ -1,10 +1,9 @@
-// src/components/PassedModal.jsx
 import React from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
 
 const PassedModal = ({ isOpen, closeModal, details = [] }) => {
-    console.log('PassedModal details:', details);
+    console.log('PassedModal details:', details); // Verifica qué datos están llegando al modal
     return (
         <Transition appear show={isOpen} as={Fragment}>
             <Dialog as="div" className="relative z-10" onClose={closeModal}>

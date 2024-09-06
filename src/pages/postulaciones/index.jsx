@@ -14,10 +14,27 @@ export default function MyPostulaciones() {
     const fetchApplications = async () => {
       if (user) {
         try {
+          // Obtener todas las postulaciones del usuario
           const response = await axios.get(`/applications/applications/${user.id}`);
-          setApplications(response.data);
+          const fetchedApplications = response.data; // Guardamos las aplicaciones en una variable
+
+          // Obtener todas las postulaciones rechazadas del usuario
+          const rejectedResponse = await axios.get(`/applications/rejected/${user.id}`);
+          const rejectedApplicants = rejectedResponse.data;
+
+          // Actualizamos las aplicaciones, marcando las rechazadas
+          const updatedApplications = fetchedApplications.map(application => {
+            const isRejected = rejectedApplicants.some(rejected => rejected.job_id === application.job_id);
+            return {
+              ...application,
+              status: isRejected ? 'rejected' : application.status
+            };
+          });
+
+          // Actualizar el estado de las aplicaciones con las rechazadas
+          setApplications(updatedApplications);
         } catch (error) {
-          console.error('Error fetching applications:', error);
+          console.error('Error fetching applications or rejected applicants:', error);
         }
       }
     };

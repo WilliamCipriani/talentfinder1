@@ -3,7 +3,7 @@ import Sidebar from './Slidebar';
 import Navbar from './Navbar';
 import JobTable from './JobTable';
 import ApplicantList from './ApplicantList';
-import Dashboard from './Dashboard'; // Importa el componente Dashboard
+import Dashboard from './Dashboard';
 
 const AdminDashboard = () => {
   const [view, setView] = useState({ view: 'jobTable', company: null });

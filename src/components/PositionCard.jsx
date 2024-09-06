@@ -9,7 +9,11 @@ export default function PositionCard({ title, description, status }) {
         <p className="text-sm text-gray-500">{description}</p>
       </div>
       <div className="flex flex-row space-x-6">
-        <ProgressCircle status={status} />  
+        {status === 'rejected' ? (
+          <p className="text-red-500 font-semibold">No fue seleccionado</p>
+        ) : (
+          <ProgressCircle status={status} />
+        )}
       </div>
     </div>
   );
