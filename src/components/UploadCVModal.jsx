@@ -13,7 +13,8 @@ export default function UploadCVModal({ isOpen, onClose }) {
       try {
         const response = await axios.get('/cv/user-cv', {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}` // Asegúrate de que el token se está enviando
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+            'api_key': process.env.NEXT_PUBLIC_API_KEY
           }
         });
         setUserCV(response.data);
@@ -76,7 +77,8 @@ export default function UploadCVModal({ isOpen, onClose }) {
       const response = await axios.post('/cv/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
-          Authorization: `Bearer ${localStorage.getItem('token')}` // Asegúrate de que el token se está enviando
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          'api_key': process.env.NEXT_PUBLIC_API_KEY
         }
       });
 
@@ -94,7 +96,8 @@ export default function UploadCVModal({ isOpen, onClose }) {
     try {
       const response = await axios.delete('/cv/delete', {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}` // Asegúrate de que el token se está enviando
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          'api_key': process.env.NEXT_PUBLIC_API_KEY 
         }
       });
 
