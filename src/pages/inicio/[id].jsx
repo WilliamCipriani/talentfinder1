@@ -19,7 +19,7 @@ export default function DetalleTrabajo({ job }) {
         console.error('Error al obtener el CV del usuario:', error);
         if (error.response && error.response.status === 401) {
           alert('Autenticación requerida. Por favor, inicia sesión nuevamente.');
-          router.push('/login');
+          router.push('/');
         }
       }
     };
