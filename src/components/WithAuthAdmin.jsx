@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import { useUser } from '@/context/userContext';
 
 const withAuthAdmin = (WrappedComponent) => {
-  return (props) => {
+  const Wrapper = (props) => {
     const { user, setUser } = useUser();
     const router = useRouter();
 
@@ -28,6 +28,16 @@ const withAuthAdmin = (WrappedComponent) => {
 
     return <WrappedComponent {...props} />;
   };
+
+  // Añadir la propiedad displayName
+  Wrapper.displayName = `withAuthAdmin(${getDisplayName(WrappedComponent)})`;
+
+  return Wrapper;
 };
+
+// Función auxiliar para obtener el nombre del componente
+function getDisplayName(WrappedComponent) {
+  return WrappedComponent.displayName || WrappedComponent.name || 'Component';
+}
 
 export default withAuthAdmin;
