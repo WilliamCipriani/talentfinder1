@@ -32,7 +32,7 @@ export default function Signup() {
         email: formData.email,
         password: formData.password,
         full_name: formData.fullName,
-        role_id: 1, // Enviar role_id
+        role_id: 1,
       });
 
       if (response.status === 201) {

@@ -9,23 +9,25 @@ import CompanyModal from './CompanyModal';
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, PointElement, LineElement);
 
 const Dashboard = () => {
-  const [data, setData] = useState({ passed: 0, notPassed: 0, byJob: {}, byCompany: {} });
+  const [data, setData] = useState({ passed: 0, notPassed: 0, byJob: {}, byCompany: {}, rejectedByJob: {},  rejectedByCompany: {},});
   const [isPassedModalOpen, setIsPassedModalOpen] = useState(false);
   const [isJobModalOpen, setIsJobModalOpen] = useState(false);
   const [isCompanyModalOpen, setIsCompanyModalOpen] = useState(false);
   const [details, setDetails] = useState([]);
   const [selectedDetail, setSelectedDetail] = useState([]);
+  const [rejectedDetails, setRejectedDetails] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get('/approved-applicants/approvedApplicants');
-        const { passed, notPassed, byJob, byCompany, approvedApplicants = [] } = response.data || { passed: 0, notPassed: 0, byJob: {}, byCompany: {}, approvedApplicants: [] };
+        const { passed, notPassed, byJob, byCompany, approvedApplicants = [], rejectedApplicants = [], rejectedByJob = {}, rejectedByCompany = {} } = response.data || { passed: 0, notPassed: 0, byJob: {}, byCompany: {}, approvedApplicants: [], rejectedApplicants: [], rejectedByJob: {}, rejectedByCompany: {} };
 
-        console.log('Fetched Data:', { passed, notPassed, byJob, byCompany, approvedApplicants });
+        console.log('Fetched Data:', { passed, notPassed, byJob, byCompany, approvedApplicants, rejectedApplicants });
 
-        setData({ passed, notPassed, byJob, byCompany });
+        setData({ passed, notPassed, byJob, byCompany, rejectedByJob, rejectedByCompany });
         setDetails(approvedApplicants); // Set the detailed applicants, default to empty array if undefined
+        setRejectedDetails(rejectedApplicants);
         console.log('Details after fetching:', approvedApplicants); // Log details after setting
       } catch (error) {
         console.error('Error fetching user data:', error);
@@ -72,9 +74,14 @@ const Dashboard = () => {
     labels: ['Usuarios que Pasaron', 'Usuarios que No Pasaron'],
     datasets: [
       {
-        label: 'Usuarios',
+        label: 'Usuarios Aprobados',
         data: [data.passed, data.notPassed],
         backgroundColor: ['#4CAF50', '#F44336'],
+      },
+      {
+        label: 'Usuarios Rechazados',
+        data: [Object.values(data.rejectedByJob).reduce((a, b) => a + b, 0), 0], // Suma los rechazados
+        backgroundColor: '#FFC107',
       },
     ],
   };
@@ -83,10 +90,16 @@ const Dashboard = () => {
     labels: Object.keys(data.byJob),
     datasets: [
       {
-        label: 'Usuarios por Título de Trabajo',
+        label: 'Usuarios Aprobados por Título de Trabajo',
         data: Object.values(data.byJob),
         fill: false,
         borderColor: '#4CAF50',
+      },
+      {
+        label: 'Usuarios Rechazados por Título de Trabajo',
+        data: Object.values(data.rejectedByJob),
+        fill: false,
+        borderColor: '#FFC107',
       },
     ],
   };
@@ -100,6 +113,10 @@ const Dashboard = () => {
           const colors = ['#4CAF50', '#F44336', '#FFC107', '#00BCD4', '#9C27B0'];
           return colors[index % colors.length];
         }),
+      },
+      {
+        data: Object.values(data.rejectedByCompany),
+        backgroundColor: ['#FFC107'], // Color específico para los rechazados
       },
     ],
   };
@@ -148,6 +165,7 @@ const Dashboard = () => {
       <PassedModal isOpen={isPassedModalOpen} closeModal={closePassedModal} details={selectedDetail} />
       <JobModal isOpen={isJobModalOpen} closeModal={closeJobModal} details={selectedDetail} />
       <CompanyModal isOpen={isCompanyModalOpen} closeModal={closeCompanyModal} details={selectedDetail} />
+      {/*<RejectedModal isOpen={isRejectedModalOpen} closeModal={closeRejectedModal} details={rejectedDetails} />*/}
     </div>
   );
 };

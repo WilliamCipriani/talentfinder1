@@ -109,7 +109,7 @@ export default function DetalleTrabajo({ job }) {
                     <option value="">Seleccionar CV</option>
                     {userCVs.map((cv) => (
                       <option key={cv.id} value={cv.id}>
-                        {cv.public_id.split('/').pop()}
+                       {cv.uploaded_at ? `CV subido el ${new Date(cv.uploaded_at).toLocaleDateString()}` : `CV #${cv.id}`}
                       </option>
                     ))}
                   </select>

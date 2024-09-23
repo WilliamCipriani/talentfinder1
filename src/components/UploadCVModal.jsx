@@ -7,9 +7,11 @@ export default function UploadCVModal({ isOpen, onClose }) {
   const [userCV, setUserCV] = useState(null);
   const [dragActive, setDragActive] = useState(false);
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchUserCV = async () => {
+      setLoading(true);
       try {
         const response = await axios.get('/cv/user-cv', {
           headers: {
@@ -18,8 +20,11 @@ export default function UploadCVModal({ isOpen, onClose }) {
           }
         });
         setUserCV(response.data);
+        console.log(response.data);
       } catch (error) {
         console.error('Error al obtener el CV:', error.response?.data || error.message);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -64,9 +69,10 @@ export default function UploadCVModal({ isOpen, onClose }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    setLoading(true);
     if (!file) {
       setError('Por favor, selecciona un archivo PDF antes de subir.');
+      setLoading(false);
       return;
     }
 
@@ -84,15 +90,19 @@ export default function UploadCVModal({ isOpen, onClose }) {
 
       if (response.status === 201) {
         alert('CV subido exitosamente');
+        setFile(null); // Limpiar el archivo
         onClose(); // Cierra el modal
       }
     } catch (error) {
       alert('Error al subir el CV');
       console.error('Error:', error.response?.data || error.message);
+    } finally {
+      setLoading(false); // Ocultar spinner después de la subida
     }
   };
 
   const handleDelete = async () => {
+    setLoading(true);
     try {
       const response = await axios.delete('/cv/delete', {
         headers: {
@@ -108,8 +118,39 @@ export default function UploadCVModal({ isOpen, onClose }) {
     } catch (error) {
       alert('Error al eliminar el CV');
       console.error('Error:', error.response?.data || error.message);
+    } finally {
+      setLoading(false); // Ocultar spinner después de eliminar
     }
   };
+
+  const handleDownload = async (cvId) => {
+    setLoading(true);
+    try {
+      const response = await axios.get(`/cv/download-cv/${cvId}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          'api_key': process.env.NEXT_PUBLIC_API_KEY
+        },
+        responseType: 'blob' // Asegúrate de que el archivo binario se maneje como un blob
+      });
+  
+      // Crear un enlace de descarga
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `cv_usuario_${cvId}.pdf`); // Nombre del archivo
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+  
+    } catch (error) {
+      console.error('Error al descargar el CV:', error.response?.data || error.message);
+      alert('Error al descargar el CV');
+    } finally {
+      setLoading(false); // Ocultar spinner después de la descarga
+    }
+  };
+  
 
   if (!isOpen) return null;
 
@@ -117,19 +158,23 @@ export default function UploadCVModal({ isOpen, onClose }) {
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
         <h2 className="text-2xl font-bold mb-4 text-center">Subir CV</h2>
-        {userCV && (
+
+        {loading && (
+          <div className="flex justify-center items-center mb-4">
+            <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+          </div>
+        )}
+
+        {!loading && userCV && userCV.active === true && (
           <div className="mb-4">
             <p className="text-gray-700">Ya tienes un CV subido:</p>
             <div className='flex text-center items-center gap-x'>
-              <a
-                href={userCV.secure_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-500 underline"
-                download={`${userCV.public_id}.pdf`}
-              >
+            <button
+              onClick={() => handleDownload(userCV.id)} 
+              className="text-blue-500 underline"
+            >
                 Descargar CV
-              </a>
+            </button>
               <button
                 onClick={handleDelete}
                 className="text-red-600 font-bold rounded-lg focus:outline-none focus:shadow-outline transition duration-150 ease-in-out"
@@ -139,6 +184,7 @@ export default function UploadCVModal({ isOpen, onClose }) {
             </div>
           </div>
         )}
+
         <form onSubmit={handleSubmit}>
           <div 
             className={`mb-4 ${dragActive ? 'border-blue-500 bg-gray-50' : 'border-gray-300'} flex items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer hover:border-blue-500 hover:bg-gray-50`}
