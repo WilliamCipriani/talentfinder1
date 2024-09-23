@@ -147,7 +147,7 @@ export default function UploadCVModal({ isOpen, onClose }) {
       console.error('Error al descargar el CV:', error.response?.data || error.message);
       alert('Error al descargar el CV');
     } finally {
-      setLoading(false); // Ocultar spinner después de la descarga
+      setLoading(false); 
     }
   };
   
