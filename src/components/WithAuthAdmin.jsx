@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useUser } from '@/context/userContext';
 
-const withAuthAdmin = (WrappedComponent) => {
+const WithAuthAdmin = (WrappedComponent) => {
   const Wrapper = (props) => {
     const { user, setUser } = useUser();
     const router = useRouter();
@@ -40,4 +40,4 @@ function getDisplayName(WrappedComponent) {
   return WrappedComponent.displayName || WrappedComponent.name || 'Component';
 }
 
-export default withAuthAdmin;
+export default WithAuthAdmin;

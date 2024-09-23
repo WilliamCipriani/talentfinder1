@@ -1,5 +1,5 @@
 import dynamic from 'next/dynamic';
-import withAuthAdmin from '@/components/withAuthAdmin';
+import withAuthAdmin from '@/components/WithAuthAdmin';
 
 const AdminDashboard = dynamic(() => import('../../components/AdminDashboard'), { ssr: false });
 
