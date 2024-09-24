@@ -138,10 +138,10 @@ export async function getStaticPaths() {
       params: { id: job.id.toString() },
     }));
 
-    return { paths, fallback: false };
+    return { paths, fallback: 'blocking' };
   } catch (error) {
     console.error('Error fetching job IDs:', error);
-    return { paths: [], fallback: false };
+    return { paths: [], fallback: 'blocking' };
   }
 }
 
