@@ -84,7 +84,7 @@ export default function Home() {
                     Recuérdame
                   </label>
                 </div>
-                <Link href="#" className="text-sm text-blue-600 hover:underline">
+                <Link href="/forgot-password" className="text-sm text-blue-600 hover:underline">
                   ¿Olvidaste tu contraseña?
                 </Link>
               </div>
