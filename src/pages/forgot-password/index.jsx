@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import axios from '../../lib/axios';
 import { useRouter } from 'next/router';
+import Link from 'next/link';
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState('');
@@ -62,9 +63,9 @@ export default function ForgotPassword() {
         </form>
         <p className="mt-4 text-center text-sm">
           ¿Ya tienes una cuenta?{' '}
-          <a href="/" className="text-blue-600 hover:underline">
+          <Link href="/" className="text-blue-600 hover:underline">
             Iniciar Sesión
-          </a>
+          </Link>
         </p>
       </div>
     </div>
