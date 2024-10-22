@@ -14,7 +14,19 @@ const ApplicantList = ({ company }) => {
           },
         });
         const filteredApplicants = response.data.filter(applicant => applicant.company === company);
-        setApplicants(filteredApplicants);
+
+        // Asignar las URLs de las imágenes base64 directamente
+        const applicantsWithImages = filteredApplicants.map(applicant => {
+          if (applicant.profile_image) {
+            // Utiliza la cadena base64 directamente
+            applicant.profileImageUrl = `data:image/png;base64,${applicant.profile_image}`;
+          } else {
+            applicant.profileImageUrl = '/img/perfil.png'; // Imagen predeterminada si no tiene
+          }
+          return applicant;
+        });
+
+        setApplicants(applicantsWithImages);
       } catch (error) {
         console.error('Error fetching applicants:', error);
       }
@@ -25,7 +37,7 @@ const ApplicantList = ({ company }) => {
     }
   }, [company]);
 
-   // Función para manejar la descarga del CV
+  // Función para manejar la descarga del CV
   const handleDownload = async (cvId, fullName) => {
     try {
       const response = await axios.get(`/cv/download-cv/${cvId}`, {
@@ -61,7 +73,12 @@ const ApplicantList = ({ company }) => {
         {applicants.map((applicant, index) => (
           <li key={index} className="flex items-center justify-between p-4 bg-white mb-4 rounded shadow">
             <div className="flex items-center">
-              <img src="/img/perfil.png" alt={applicant.full_name} className="w-10 h-10 rounded-full" />
+              {/* Mostrar la imagen de perfil obtenida directamente desde los datos del backend */}
+              <img 
+                src={applicant.profileImageUrl} 
+                alt={applicant.full_name} 
+                className="w-10 h-10 rounded-full object-cover" 
+              />
               <div className="ml-4 flex gap-x-10">
                 <div className="font-bold">{applicant.full_name}</div>
                 <div>{applicant.company}</div>

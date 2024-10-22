@@ -5,7 +5,15 @@ export default function JobCard({ job }) {
     <div className="bg-white shadow-lg rounded-lg p-6 m-4 w-[450px] h-[400px] flex flex-col justify-between">
       <div>
         <div className="flex items-center space-x-3 mb-4">
-          <div className="bg-gray-300 rounded-full h-10 w-10 flex-shrink-0"></div>
+        {job.companyImage ? (
+            <img
+              src={job.companyImage ? `data:image/png;base64,${job.companyImage}` : '/img/default.png'}
+              alt={job.company}
+              className="rounded-full h-10 w-10 object-cover"
+            />
+          ) : (
+            <div className="bg-gray-300 rounded-full h-10 w-10 flex-shrink-0"></div>
+          )}
           <div>
             <h4 className="text-lg font-bold">{job.company}</h4>
             <p className="text-gray-600 text-sm">{job.type}</p>

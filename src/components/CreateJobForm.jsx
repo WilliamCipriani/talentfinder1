@@ -14,6 +14,7 @@ const CreateJobForm = () => {
     responsibilities: '',
     benefits: ''
   });
+  const [companyImage, setCompanyImage] = useState(null); // Nuevo estado para la imagen de la empresa
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
@@ -21,29 +22,39 @@ const CreateJobForm = () => {
     setJob({ ...job, [name]: value });
   };
 
+  const handleImageChange = (e) => {
+    setCompanyImage(e.target.files[0]); // Capturar la imagen seleccionada
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    // Convertir los campos de texto separados por saltos de línea en arreglos
+
     const qualificationsArray = job.qualifications.split('\n').filter(Boolean);
     const responsibilitiesArray = job.responsibilities.split('\n').filter(Boolean);
     const benefitsArray = job.benefits.split('\n').filter(Boolean);
 
-    const newJob = {
-      ...job,
-      qualifications: qualificationsArray,
-      responsibilities: responsibilitiesArray,
-      benefits: benefitsArray,
-    };
+    const formData = new FormData();
+    formData.append('company', job.company);
+    formData.append('type', job.type);
+    formData.append('title', job.title);
+    formData.append('location', job.location);
+    formData.append('salaryRange', job.salaryRange);
+    formData.append('description', job.description);
+    formData.append('daysPosted', job.daysPosted);
+    formData.append('qualifications', qualificationsArray.join('\n'));
+    formData.append('responsibilities', responsibilitiesArray.join('\n'));
+    formData.append('benefits', benefitsArray.join('\n'));
 
-    console.log('Submitting new job:', newJob);
+    if (companyImage) {
+      formData.append('company_image', companyImage); // Adjuntar la imagen al FormData
+    }
 
     try {
-
-      const response = await axios.post('/jobs/create-job', newJob, {
+      const response = await axios.post('/jobs/create-job', formData, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
-          'Content-Type': 'application/json',
+          'Content-Type': 'multipart/form-data',
         },
       });
 
@@ -61,19 +72,18 @@ const CreateJobForm = () => {
           responsibilities: '',
           benefits: ''
         });
+        setCompanyImage(null);
       } else {
-        console.error('Error en la respuesta:', response.data); 
         alert('Error al crear el trabajo');
       }
     } catch (error) {
-      // Log completo del error para entender qué está pasando
       console.error('Error al enviar la solicitud:', error.response || error.message);
       if (error.response) {
-        console.error('Datos del error:', error.response.data); // Ver detalles del error en la respuesta
+        console.error('Datos del error:', error.response.data);
       }
       alert('Error al enviar la solicitud');
     } finally {
-      setLoading(false); // Desactivar el spinner
+      setLoading(false);
     }
   };
 
@@ -151,6 +161,19 @@ const CreateJobForm = () => {
           />
         </div>
       </div>
+
+      {/* Campo para subir la imagen de la empresa */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700">Imagen de la Empresa</label>
+        <input
+          type="file"
+          name="company_image"
+          accept="image/*"
+          className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          onChange={handleImageChange} // Manejar la selección de la imagen
+        />
+      </div>
+
       <div>
         <label className="block text-sm font-medium text-gray-700">Descripción General</label>
         <textarea
@@ -164,13 +187,7 @@ const CreateJobForm = () => {
       <div>
         <label className="block text-sm font-medium text-gray-700">Calificaciones</label>
         <p className="text-sm text-gray-500 mt-1">
-          Escribe cada calificación en una nueva línea. Ejemplo:
-          <br />
-          Experiencia en desarrollo web
-          <br />
-          Conocimiento en React y Node.js
-          <br />
-          Trabajo en equipo
+          Escribe cada calificación en una nueva línea.
         </p>
         <textarea
           name="qualifications"
@@ -179,18 +196,11 @@ const CreateJobForm = () => {
           onChange={handleChange}
           required
         />
-        
       </div>
       <div>
         <label className="block text-sm font-medium text-gray-700">Responsabilidades</label>
         <p className="text-sm text-gray-500 mt-1">
-          Escribe cada responsabilidad en una nueva línea. Ejemplo:
-          <br />
-          Supervisar el equipo de desarrollo
-          <br />
-          Mantener actualizadas las bases de datos
-          <br />
-          Coordinar con el cliente
+          Escribe cada responsabilidad en una nueva línea.
         </p>
         <textarea
           name="responsibilities"
@@ -203,13 +213,7 @@ const CreateJobForm = () => {
       <div>
         <label className="block text-sm font-medium text-gray-700">Beneficios</label>
         <p className="text-sm text-gray-500 mt-1">
-          Escribe cada beneficio en una nueva línea. Ejemplo:
-          <br />
-          Seguro médico
-          <br />
-          Bono anual por desempeño
-          <br />
-          Flexibilidad en horario
+          Escribe cada beneficio en una nueva línea.
         </p>
         <textarea
           name="benefits"
@@ -223,10 +227,10 @@ const CreateJobForm = () => {
         <button
           type="submit"
           className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 flex items-center justify-center"
-          disabled={loading} // Deshabilitar mientras está en modo de carga
+          disabled={loading}
         >
           {loading ? (
-            <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div> // Spinner
+            <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
           ) : (
             'Crear'
           )}
