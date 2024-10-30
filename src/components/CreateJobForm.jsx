@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from '../lib/axios';
 
-const CreateJobForm = () => {
+const CreateJobForm = ( { job: initialJob } ) => {
   const [job, setJob] = useState({
     company: '',
     type: '',
@@ -15,7 +15,32 @@ const CreateJobForm = () => {
     benefits: ''
   });
   const [companyImage, setCompanyImage] = useState(null); // Nuevo estado para la imagen de la empresa
+  const [previewImage, setPreviewImage] = useState(null);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    console.log("Initial job", initialJob);
+    if (initialJob) {
+      setJob({
+        company: initialJob.company || '',
+        type: initialJob.type || '',
+        title: initialJob.title || '',
+        location: initialJob.location || '',
+        salaryRange: initialJob.salaryRange || '',
+        description: initialJob.description || '',
+        daysPosted: initialJob.daysPosted || 0,
+        qualifications: initialJob.qualifications || '',
+        responsibilities: initialJob.responsibilities || '',
+        benefits: initialJob.benefits || ''
+      });
+      if (initialJob.companyImage) {
+        const imageData = initialJob.companyImage.startsWith('data:image')
+          ? initialJob.companyImage
+          : `data:image/jpeg;base64,${initialJob.companyImage}`;
+        setPreviewImage(imageData);
+      }
+    }
+  }, [initialJob]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -23,8 +48,13 @@ const CreateJobForm = () => {
   };
 
   const handleImageChange = (e) => {
-    setCompanyImage(e.target.files[0]); // Capturar la imagen seleccionada
+    const file = e.target.files[0];
+    if (file) {
+      setCompanyImage(file);
+      setPreviewImage(URL.createObjectURL(file));
+    }
   };
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -232,7 +262,7 @@ const CreateJobForm = () => {
           {loading ? (
             <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
           ) : (
-            'Crear'
+            initialJob ? 'Actualizar' : 'Crear'
           )}
         </button>
       </div>
