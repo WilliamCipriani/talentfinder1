@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const instance = axios.create({
-  baseURL: 'https://apitalendfinder-h2bjdhfdb6aqcddc.canadacentral-01.azurewebsites.net',
+  baseURL: 'https://apitalendfinderv2-ewg9dud8d6ajg6ah.centralus-01.azurewebsites.net',
   //baseURL: 'http://localhost:8000',
 });
 

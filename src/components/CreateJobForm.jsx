@@ -33,6 +33,7 @@ const CreateJobForm = ( { job: initialJob } ) => {
         responsibilities: initialJob.responsibilities || '',
         benefits: initialJob.benefits || ''
       });
+      
       if (initialJob.companyImage) {
         const imageData = initialJob.companyImage.startsWith('data:image')
           ? initialJob.companyImage
