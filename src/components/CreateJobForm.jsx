@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from '../lib/axios';
 
-const CreateJobForm = ( { job: initialJob } ) => {
+const CreateJobForm = ( { job: initialJob,  onCreate, onUpdate, onClose, fetchJobs  } ) => {
   const [job, setJob] = useState({
     company: '',
     type: '',
@@ -19,19 +19,18 @@ const CreateJobForm = ( { job: initialJob } ) => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    console.log("Initial job", initialJob);
     if (initialJob) {
       setJob({
-        company: initialJob.company || '',
-        type: initialJob.type || '',
-        title: initialJob.title || '',
-        location: initialJob.location || '',
-        salaryRange: initialJob.salaryRange || '',
-        description: initialJob.description || '',
-        daysPosted: initialJob.daysPosted || 0,
-        qualifications: initialJob.qualifications || '',
-        responsibilities: initialJob.responsibilities || '',
-        benefits: initialJob.benefits || ''
+        ...initialJob,
+        qualifications: Array.isArray(initialJob.qualifications)
+          ? initialJob.qualifications.join('\n')
+          : initialJob.qualifications || '',
+        responsibilities: Array.isArray(initialJob.responsibilities)
+          ? initialJob.responsibilities.join('\n')
+          : initialJob.responsibilities || '',
+        benefits: Array.isArray(initialJob.benefits)
+          ? initialJob.benefits.join('\n')
+          : initialJob.benefits || '',
       });
       
       if (initialJob.companyImage) {
@@ -50,9 +49,11 @@ const CreateJobForm = ( { job: initialJob } ) => {
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
-    if (file) {
+    if (file && file.type.startsWith('image')) { // Validar que el archivo es una imagen
       setCompanyImage(file);
       setPreviewImage(URL.createObjectURL(file));
+    } else {
+      alert('Por favor, selecciona un archivo de imagen válido');
     }
   };
   
@@ -60,6 +61,8 @@ const CreateJobForm = ( { job: initialJob } ) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+
+    console.log("Datos del trabajo antes de enviar:", job);
 
     const qualificationsArray = job.qualifications.split('\n').filter(Boolean);
     const responsibilitiesArray = job.responsibilities.split('\n').filter(Boolean);
@@ -73,40 +76,37 @@ const CreateJobForm = ( { job: initialJob } ) => {
     formData.append('salaryRange', job.salaryRange);
     formData.append('description', job.description);
     formData.append('daysPosted', job.daysPosted);
-    formData.append('qualifications', qualificationsArray.join('\n'));
-    formData.append('responsibilities', responsibilitiesArray.join('\n'));
-    formData.append('benefits', benefitsArray.join('\n'));
+    formData.append('qualifications', JSON.stringify(qualificationsArray));
+    formData.append('responsibilities', JSON.stringify(responsibilitiesArray));
+    formData.append('benefits', JSON.stringify(benefitsArray));
 
     if (companyImage) {
-      formData.append('company_image', companyImage); // Adjuntar la imagen al FormData
+      formData.append('company_image', companyImage); 
     }
 
-    try {
-      const response = await axios.post('/jobs/create-job', formData, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-          'Content-Type': 'multipart/form-data',
-        },
-      });
 
-      if (response.status >= 200 && response.status < 300) {
-        alert('Trabajo creado exitosamente');
-        setJob({
-          company: '',
-          type: '',
-          title: '',
-          location: '',
-          salaryRange: '',
-          description: '',
-          daysPosted: 0,
-          qualifications: '',
-          responsibilities: '',
-          benefits: ''
+    try {
+      if (initialJob) {
+        // Actualización de trabajo
+        const response = await axios.put(`/jobs/update-job/${initialJob.id}`, formData, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+            //'Content-Type': 'multipart/form-data',
+          },
         });
-        setCompanyImage(null);
+        onUpdate(initialJob);
       } else {
-        alert('Error al crear el trabajo');
+        // Creación de trabajo
+        const response = await axios.post('/jobs/create-job', formData, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+        onCreate(response.data); // Llama a onCreate solo en caso de creación
       }
+      fetchJobs();
+      onClose(); // Cerrar modal al completar la operación
     } catch (error) {
       console.error('Error al enviar la solicitud:', error.response || error.message);
       if (error.response) {

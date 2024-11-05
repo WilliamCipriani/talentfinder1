@@ -15,7 +15,7 @@ export default function Header({ title, subtitle, backgroundClass }) {
   const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [profileImage, setProfileImage] = useState(null); // Estado para la imagen de perfil del usuario
-  const [isImageModalOpen, setIsImageModalOpen] = useState(false); // Modal para subir imagen
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false); 
   const [image, setImage] = useState(null); // Almacena la imagen seleccionada
 
   const router = useRouter();
@@ -105,37 +105,49 @@ export default function Header({ title, subtitle, backgroundClass }) {
     <div>
       <div className="w-full h-16 bg-gray-800 flex justify-between items-center px-4 md:px-6">
         <div className="flex items-center space-x-4">
-          {/* Mostrar la imagen si existe, si no mostrar el ícono de usuario */}
-          {profileImage ? (
-            <img src={profileImage} alt="Perfil" className="w-10 h-10 rounded-full object-cover" />
+          {/* Si hay usuario logueado, mostrar la imagen o el ícono de usuario */}
+          {user ? (
+            <>
+              {profileImage ? (
+                <img src={profileImage} alt="Perfil" className="w-10 h-10 rounded-full object-cover" />
+              ) : (
+                <FaRegUser className="text-white text-2xl" />
+              )}
+              <span className="text-white">{user.full_name}</span>
+            </>
           ) : (
-            <FaRegUser className="text-white text-2xl" />
+            <Link href="/">
+              <button className="text-white bg-blue-600 px-4 py-2 rounded-lg hover:bg-blue-500 transition duration-300">
+                Iniciar Sesión
+              </button>
+            </Link>
           )}
-          <span className="text-white">{user ? user.full_name : 'Usuario'}</span>
         </div>
         <div className="flex items-center space-x-4">
-          <div className="relative">
-            <FaBell className="text-white text-2xl cursor-pointer" onClick={toggleNotificationModal} />
-            {notifications.length > 0 && (
-              <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full transform translate-x-1/2 -translate-y-1/2">
-                {notifications.length}
-              </span>
-            )}
-            <NotificationModal isOpen={isNotificationModalOpen} notifications={notifications} onClose={toggleNotificationModal} />
-          </div>
-          <button onClick={openImageModal} className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-500 transition duration-300">
-            Subir Imagen
-          </button>
-          <button onClick={openModal} className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-500 transition duration-300">
-            Subir CV
-          </button>
           {user && (
-            <button
-              onClick={handleLogout}
-              className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-500 transition duration-300"
-            >
-              Cerrar sesión
-            </button>
+            <>
+              <div className="relative">
+                <FaBell className="text-white text-2xl cursor-pointer" onClick={toggleNotificationModal} />
+                {notifications.length > 0 && (
+                  <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full transform translate-x-1/2 -translate-y-1/2">
+                    {notifications.length}
+                  </span>
+                )}
+                <NotificationModal isOpen={isNotificationModalOpen} notifications={notifications} onClose={toggleNotificationModal} />
+              </div>
+              <button onClick={openImageModal} className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-500 transition duration-300">
+                Subir Imagen
+              </button>
+              <button onClick={openModal} className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-500 transition duration-300">
+                Subir CV
+              </button>
+              <button
+                onClick={handleLogout}
+                className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-500 transition duration-300"
+              >
+                Cerrar sesión
+              </button>
+            </>
           )}
           <button onClick={toggleMenu} className="block md:hidden text-white focus:outline-none">
             {menuOpen ? <HiOutlineX size={24} /> : <HiOutlineMenu size={24} />}
@@ -148,19 +160,25 @@ export default function Header({ title, subtitle, backgroundClass }) {
           <Link href="/" className="text-white hover:text-gray-400 transition duration-300">
             Inicio
           </Link>
-          <Link href="/mis-postulaciones" className="text-white hover:text-gray-400 transition duration-300">
-            Mis Postulaciones
-          </Link>
-          <button onClick={openModal} className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-500 transition duration-300">
-            Subir CV
-          </button>
-          {user && (
-            <button
-              onClick={handleLogout}
-              className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-500 transition duration-300"
-            >
-              Cerrar sesión
-            </button>
+          {user ? (
+            <>
+              <Link href="/mis-postulaciones" className="text-white hover:text-gray-400 transition duration-300">
+                Mis Postulaciones
+              </Link>
+              <button onClick={openModal} className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-500 transition duration-300">
+                Subir CV
+              </button>
+              <button
+                onClick={handleLogout}
+                className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-500 transition duration-300"
+              >
+                Cerrar sesión
+              </button>
+            </>
+          ) : (
+            <Link href="/login" className="text-white bg-blue-600 px-4 py-2 rounded-lg hover:bg-blue-500 transition duration-300">
+              Iniciar Sesión
+            </Link>
           )}
         </div>
       )}
